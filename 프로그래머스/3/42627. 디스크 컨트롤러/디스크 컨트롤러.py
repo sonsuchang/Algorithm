@@ -5,9 +5,7 @@ def solution(jobs):
     answer = 0
     time = 0
     cnt = 0
-    while True:
-        if cnt == length:
-            break
+    while jobs:
         queue = []
         for _ in range(len(jobs)):
             if jobs[0][0] <= time:
