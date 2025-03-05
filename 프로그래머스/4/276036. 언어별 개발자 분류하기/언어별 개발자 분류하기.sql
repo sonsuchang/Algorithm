@@ -18,7 +18,9 @@ A as (
 
 B as (
     select "B" as Grade, id, email from cte
-    where name = "C#"
+    where name = "C#" and id not in (
+        select id from A
+    )
 ),
 
 C as (
