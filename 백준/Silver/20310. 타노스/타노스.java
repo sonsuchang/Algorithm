@@ -4,45 +4,46 @@ import java.io.InputStreamReader;
 
 public class Main {
 
-    static String s;
-
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        s = br.readLine();
+        String s = br.readLine();
 
         int zeroCount = 0;
         int oneCount = 0;
-        int length = s.length();
 
-        for(int i = 0; i < length; i++) {
-            if (s.charAt(i) == '0') {
-                zeroCount++;
+        for (char c : s.toCharArray()) {
+            if (c == '0') zeroCount++;
+            else oneCount++;
+        }
+
+        int zeroToRemove = zeroCount / 2;
+        int oneToRemove = oneCount / 2;
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+
+            if (c == '1' && oneToRemove > 0) {
+                oneToRemove--;
             } else {
-                oneCount++;
+                sb.append(c);
             }
         }
 
-        zeroCount /= 2;
-        oneCount /= 2;
+        StringBuilder result = new StringBuilder();
+        zeroToRemove = zeroCount / 2;
+        
+        for (int i = sb.length() - 1; i >= 0; i--) {
+            char c = sb.charAt(i);
 
-        char[] newString = new char[zeroCount + oneCount];
-
-        for (int i = 0; i < zeroCount; i++) {
-            newString[i] = '0';
+            if (c == '0' && zeroToRemove > 0) {
+                zeroToRemove--;
+            } else {
+                result.append(c);
+            }
         }
 
-        for (int i = zeroCount; i < zeroCount + oneCount; i++) {
-            newString[i] = '1';
-        }
-
-        String answer = "";
-
-        for (char c : newString) {
-            answer += String.valueOf(c);
-        }
-
-        System.out.println(answer);
+        System.out.println(result.reverse());
     }
 }
