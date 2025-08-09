@@ -13,10 +13,13 @@ public class Main {
 
         String s = sc.next();
 
-        int sum = 0;
+        long sum = 0;
+        long pow = 1;
 
         for (int i = 0; i < L; i++) {
-            sum += ((((int) s.charAt(i) - 96) * (Math.pow(r, i))) % M);
+            int val = s.charAt(i) - 'a' + 1;
+            sum = (sum + (val * pow) % M) % M;
+            pow = (pow * r) % M;
         }
 
         System.out.println(sum);
