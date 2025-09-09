@@ -3,75 +3,108 @@ import java.util.*;
 
 public class Main {
 
-    static final int[][] dx = {{1, -1, 0, 0, 1, -1}, {1, -1, 0, 0, 1, -1}};
-    static final int[][] dy = {{0, 0, 1, -1, 1, -1}, {0, 0, 1, -1, -1, 1}};
-    static int n, m;
-    static int[][] map;
-    static int[][] dp;
-
-    static class Node implements Comparable<Node>{
-        int x, y, cnt;
-
-        Node(int x, int y, int cnt){
-            this.x = x; this.y = y; this.cnt = cnt;
-        }
-
-        @Override
-        public int compareTo(Node o){
-            return this.cnt - o.cnt;
+    static class Edge {
+        int to, weight;
+        Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
         }
     }
+
+    static class Node implements Comparable<Node> {
+        int vertex, dist;
+        Node(int vertex, int dist) {
+            this.vertex = vertex;
+            this.dist = dist;
+        }
+        public int compareTo(Node other) {
+            return Integer.compare(this.dist, other.dist);
+        }
+    }
+
+    static int N, M, nodeCount;
+    static final int INF = Integer.MAX_VALUE;
+    static List<List<Edge>> graph;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+        String[] s = br.readLine().split(" ");
+        N = Integer.parseInt(s[0]);
+        M = Integer.parseInt(s[1]);
 
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
-        if((n+m)%2 != 0){
-            System.out.println("NO SOLUTION");
-            return;
+        int rowCnt = N + 1;
+        int colCnt = M + 1;
+        nodeCount = rowCnt * colCnt;
+        graph = new ArrayList<>();
+        for (int i = 0; i <= nodeCount; i++) {
+            graph.add(new ArrayList<>());
         }
 
-        map = new int[n][m];
-        dp = new int[n][m];
-        for(int i = 0; i<n; i++){
-            String str = br.readLine();
-            for(int j = 0; j<m; j++){
-                map[i][j] = ((str.charAt(j) == '/' && (i+j)%2 == 1) || (str.charAt(j) == '\\' && (i+j)%2 == 0)) ? 0 : 1;
-                dp[i][j] = Integer.MAX_VALUE;
+        char[][] board = new char[N][M];
+        for (int i = 0; i < N; i++) {
+            String line = br.readLine();
+            if (line.length() != M) {
+                System.out.println("NO SOLUTION");
+                return;
+            }
+            for (int j = 0; j < M; j++) {
+                board[i][j] = line.charAt(j);
             }
         }
 
-        dijkstra();
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                int tl = i * (M + 1) + j;
+                int tr = i * (M + 1) + (j + 1);
+                int bl = (i + 1) * (M + 1) + j;
+                int br_ = (i + 1) * (M + 1) + (j + 1);
 
-        System.out.println(dp[n-1][m-1]);
-    }
-
-    static void dijkstra(){
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        dp[0][0] = map[0][0];
-        pq.add(new Node(0, 0, dp[0][0]));
-
-        while(!pq.isEmpty()){
-            Node now = pq.poll();
-
-            if(dp[now.y][now.x] < now.cnt) continue;
-
-            for(int i = 0; i<6; i++){
-                int nx = now.x + dx[(now.x+now.y)%2][i];
-                int ny = now.y + dy[(now.x+now.y)%2][i];
-
-                if(nx>=0 && ny>=0 && nx<m && ny<n){
-                    if(dp[ny][nx] > now.cnt + map[ny][nx]){
-                        dp[ny][nx] = now.cnt + map[ny][nx];
-                        if(nx == m-1 && ny == n-1) return;
-                        pq.add(new Node(nx, ny, dp[ny][nx]));
-                    }
+                if (board[i][j] == '/') {
+                    // / 연결: bl <-> tr (0), tl <-> br (1)
+                    addEdge(bl, tr, 0);
+                    addEdge(tl, br_, 1);
+                } else if (board[i][j] == '\\') {
+                    // \ 연결: tl <-> br (0), bl <-> tr (1)
+                    addEdge(tl, br_, 0);
+                    addEdge(bl, tr, 1);
                 }
             }
         }
+
+        int result = dijkstra(0, N * (M + 1) + M);
+        System.out.println(result == INF ? "NO SOLUTION" : result);
+    }
+
+    static void addEdge(int u, int v, int weight) {
+        graph.get(u).add(new Edge(v, weight));
+        graph.get(v).add(new Edge(u, weight));
+    }
+
+    static int dijkstra(int start, int end) {
+        int[] dist = new int[nodeCount + 1];
+        Arrays.fill(dist, INF);
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+
+        dist[start] = 0;
+        pq.offer(new Node(start, 0));
+
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();
+            int u = cur.vertex;
+
+            if (dist[u] < cur.dist) continue;
+
+            for (Edge edge : graph.get(u)) {
+                int v = edge.to;
+                int w = edge.weight;
+
+                if (dist[v] > dist[u] + w) {
+                    dist[v] = dist[u] + w;
+                    pq.offer(new Node(v, dist[v]));
+                }
+            }
+        }
+
+        return dist[end];
     }
 }
-//i+j is even, direction must be '\'
-//i+j is odd, direction must be '/'
