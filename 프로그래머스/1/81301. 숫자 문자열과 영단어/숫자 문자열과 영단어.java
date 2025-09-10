@@ -1,43 +1,39 @@
 import java.util.*;
 
 class Solution {
+    
+    Map<String, String> dict = new HashMap<>();
+    
     public int solution(String s) {
-        Map<String, String> map = new HashMap<>();
-        map.put("zero", "0");
-        map.put("one", "1");
-        map.put("two", "2");
-        map.put("three", "3");
-        map.put("four", "4");
-        map.put("five", "5");
-        map.put("six", "6");
-        map.put("seven", "7");
-        map.put("eight", "8");
-        map.put("nine", "9");
-
-        StringBuilder answer = new StringBuilder();
-        int idx = 0;
-
-        while (idx < s.length()) {
-            char c = s.charAt(idx);
-
-            // 숫자인 경우 그대로 추가
-            if (Character.isDigit(c)) {
-                answer.append(c);
-                idx++;
+        dict.put("zero", "0");
+        dict.put("one", "1");
+        dict.put("two", "2");
+        dict.put("three", "3");
+        dict.put("four", "4");
+        dict.put("five", "5");
+        dict.put("six", "6");
+        dict.put("seven", "7");
+        dict.put("eight", "8");
+        dict.put("nine", "9");
+        
+        int length = s.length();
+        String answer = "";
+        
+        StringBuilder sb = new StringBuilder();
+        
+        for (int i = 0; i < length; i++) {
+            char c = s.charAt(i);
+            if (c - '0' >= 0 && c - '0' <= 9) {
+                answer += c;
                 continue;
             }
-
-            // 문자인 경우, 최대 길이 5까지 잘라서 단어 탐색
-            for (int len = 3; len <= 5 && idx + len <= s.length(); len++) {
-                String part = s.substring(idx, idx + len);
-                if (map.containsKey(part)) {
-                    answer.append(map.get(part));
-                    idx += len;
-                    break;
-                }
+            sb.append(c);
+            if (dict.keySet().contains(sb.toString())) {
+                answer += dict.get(sb.toString());
+                sb = new StringBuilder();
             }
         }
-
-        return Integer.parseInt(answer.toString());
+        
+        return Integer.parseInt(answer);
     }
 }
