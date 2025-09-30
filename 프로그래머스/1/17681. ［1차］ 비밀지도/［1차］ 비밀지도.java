@@ -1,34 +1,27 @@
 import java.util.*;
-import java.io.*;
 
 class Solution {
     public String[] solution(int n, int[] arr1, int[] arr2) {
-        String[] answer = new String[n];
-        for (int i = 0; i < n; i++) {
-            String s1 = Integer.toBinaryString(arr1[i]);
-            String s2 = Integer.toBinaryString(arr2[i]);
-            
-            StringBuilder sb1 = new StringBuilder();  
-            for (int j = 0; j < n - s1.length(); j++) sb1.append("0");
-            
-            StringBuilder sb2 = new StringBuilder();  
-            for (int j = 0; j < n - s2.length(); j++) sb2.append("0");
-            
-            sb1.append(s1);
-            sb2.append(s2);
-            
-            String result = "";
-            String temp1 = sb1.toString();
-            String temp2 = sb2.toString();
-            
-            for (int j = 0; j < n; j++) {
-                if (temp1.charAt(j) == '1' || temp2.charAt(j) == '1') result += "#";
-                else result += " ";
-            }
-            
-            answer[i] = result;
-        }
+        String[] answer = new String[n];    
         
+        for (int i = 0; i < n; i++) {
+            String temp1 = Integer.toBinaryString(arr1[i]);
+            String temp2 = Integer.toBinaryString(arr2[i]);
+            int tlength1 = temp1.length();
+            int tlength2 = temp2.length();
+            for (int j = 0; j < n - tlength1; j++) {
+                temp1 = "0" + temp1;
+            }
+            for (int j = 0; j < n - tlength2; j++) {
+                temp2 = "0" + temp2;
+            }
+            String temp = "";
+            for (int j = 0; j < n; j++) {
+                if (temp1.charAt(j) == '1' || temp2.charAt(j) == '1') temp += "#";
+                else temp += " ";
+            }
+            answer[i] = temp;
+        }
         return answer;
     }
 }
