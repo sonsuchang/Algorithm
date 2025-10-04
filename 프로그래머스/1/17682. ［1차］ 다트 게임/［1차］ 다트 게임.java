@@ -2,49 +2,45 @@ import java.util.*;
 
 class Solution {
     public int solution(String dartResult) {
-        
+        int answer = 0;
         int length = dartResult.length();
         
-        List<Integer> numList = new ArrayList<>();
+        Stack<Integer> st = new Stack<>();
         
         StringBuilder sb = new StringBuilder();
         
         for (int i = 0; i < length; i++) {
             char c = dartResult.charAt(i);
-            if (c - '0' >= 0 && c - '0' <= 9) {
+            if ((int) c <= 57 && (int) c >= 48) {
                 sb.append(c);
-            } else if (c == 'S') {
-                String temp = sb.toString();
-                numList.add(Integer.parseInt(temp));
+                continue;
+            }
+            
+            if (c == 'S') {
+                int num = Integer.parseInt(sb.toString());
                 sb = new StringBuilder();
+                st.add(num);
             } else if (c == 'D') {
-                String temp = sb.toString();
-                numList.add((int) Math.pow(Integer.parseInt(temp), 2));
+                int num = Integer.parseInt(sb.toString());
                 sb = new StringBuilder();
+                st.add((int) Math.pow(num, 2));
             } else if (c == 'T') {
-                String temp = sb.toString();
-                numList.add((int) Math.pow(Integer.parseInt(temp), 3));
+                int num = Integer.parseInt(sb.toString());
                 sb = new StringBuilder();
+                st.add((int) Math.pow(num, 3));
             } else if (c == '*') {
-                int temp = numList.size() - 1;
-                int cnt = 0;
-                while (cnt < 2 && temp >= 0) {
-                    numList.set(temp, numList.get(temp) * 2);
-                    temp--;
-                    cnt++;
+                int prev = st.pop();
+                if (!st.isEmpty()) {
+                    int pprev = st.pop();
+                    st.add(pprev * 2);
                 }
+                st.add(prev * 2);
             } else {
-                int temp = numList.size() - 1;
-                numList.set(temp, numList.get(temp) * -1);
+                int prev = st.pop();
+                st.add(prev * -1);
             }
         }
-        
-        int answer = 0;
-        
-        for (int i = 0; i < numList.size(); i++) {
-            answer += numList.get(i);
-        }
-        
+        while (!st.isEmpty()) answer += st.pop();
         return answer;
     }
 }
